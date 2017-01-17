@@ -13,7 +13,7 @@ $(document).ready(function() {
     eval($(this).val());
   });
 
-  $('.demo i').click(function() {
+  $('.daytypefilter i').click(function() {
     $(this).parent().find('input').click();
   });
   
