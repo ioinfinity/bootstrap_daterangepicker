@@ -50,6 +50,8 @@
         this.autoUpdateInput = true;
         this.alwaysShowCalendars = false;
         this.ranges = {};
+        this.dayTypeKeyValue = {}; 
+        window.dayTypeArray = ['Sun', 'Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat'];
 
         this.opens = 'right';
         if (this.element.hasClass('pull-right'))
@@ -67,6 +69,7 @@
             direction: 'ltr',
             format: moment.localeData().longDateFormat('L'),
             separator: ' - ',
+            filterLabel: 'Filter',
             applyLabel: 'Apply',
             cancelLabel: 'Cancel',
             weekLabel: 'W',
@@ -120,6 +123,10 @@
                     '<div class="range_inputs">' +
                         '<button class="applyBtn" disabled="disabled" type="button"></button> ' +
                         '<button class="cancelBtn" type="button"></button>' +
+                        '<button class="filterBtn" disabled="disabled" style="display:none;"type="button"></button> ' +
+                        '<input type="hidden" name="dateRanagePickerStartDate" id="dateRanagePickerStartDate"/>' +
+                        '<input type="hidden" name="dateRanagePickerEndDate" id="dateRanagePickerEndDate"/>' +
+                        '<input type="hidden" name="dateRanagePickerFilter" id="dateRanagePickerFilter"/>' +
                     '</div>' +
                 '</div>' +
             '</div>';
@@ -150,6 +157,9 @@
 
             if (typeof options.locale.firstDay === 'number')
               this.locale.firstDay = options.locale.firstDay;
+            
+            if (typeof options.locale.filterLabel === 'string')
+              this.locale.filterLabel = options.locale.filterLabel;
 
             if (typeof options.locale.applyLabel === 'string')
               this.locale.applyLabel = options.locale.applyLabel;
@@ -346,6 +356,19 @@
                 list += '<li data-range-key="' + this.locale.customRangeLabel + '">' + this.locale.customRangeLabel + '</li>';
             }
             list += '</ul>';
+            list = '<ul>';
+            var dayTypePrefix = 'date_range_selection_filter_';
+            var dayTypePostfix = '_cb';
+			var dayTypeFilter = {};
+			var dayTypeKeyValue = {};
+           	$.each(window.dayTypeArray, function( index, value ) {
+           		 dayTypeKeyValue[dayTypePrefix + value.toLowerCase() + dayTypePostfix] = index;
+  				 list += '<li><input type="checkbox" class="day_type_filter_checkboxes" id="'+dayTypePrefix + value.toLowerCase() + dayTypePostfix+
+  				 			'" name="'+dayTypePrefix + value.toLowerCase() + dayTypePostfix+'" >&nbsp;'+window.dayTypeArray[index]+'</li>';
+			});
+			this.dayTypeKeyValue = dayTypeKeyValue;
+			          
+            list += '</ul>';
             this.container.find('.ranges').prepend(list);
         }
 
@@ -366,7 +389,7 @@
         if (this.autoApply && typeof options.ranges !== 'object') {
             this.container.find('.ranges').hide();
         } else if (this.autoApply) {
-            this.container.find('.applyBtn, .cancelBtn').addClass('hide');
+            this.container.find('.cancelBtn, .filterBtn').addClass('hide');
         }
 
         if (this.singleDatePicker) {
@@ -394,18 +417,22 @@
         }
 
         //apply CSS classes and labels to buttons
-        this.container.find('.applyBtn, .cancelBtn').addClass(this.buttonClasses);
+        this.container.find('.applyBtn, .cancelBtn, .filterBtn').addClass(this.buttonClasses);
+        if (this.applyClass.length)
+            this.container.find('.filterBtn').addClass(this.applyClass);
         if (this.applyClass.length)
             this.container.find('.applyBtn').addClass(this.applyClass);
         if (this.cancelClass.length)
             this.container.find('.cancelBtn').addClass(this.cancelClass);
+        
+        this.container.find('.filterBtn').html(this.locale.filterLabel);
         this.container.find('.applyBtn').html(this.locale.applyLabel);
         this.container.find('.cancelBtn').html(this.locale.cancelLabel);
 
         //
         // event listeners
         //
-
+		this.container.find('.day_type_filter_checkboxes').on('change', this.updateDayTypeFilter);
         this.container.find('.calendar')
             .on('click.daterangepicker', '.prev', $.proxy(this.clickPrev, this))
             .on('click.daterangepicker', '.next', $.proxy(this.clickNext, this))
@@ -421,6 +448,7 @@
             .on('change.daterangepicker', '.daterangepicker_input input', $.proxy(this.formInputsChanged, this));
 
         this.container.find('.ranges')
+        	.on('click.daterangepicker', 'button.filterBtn', $.proxy(this.clickFilter, this))
             .on('click.daterangepicker', 'button.applyBtn', $.proxy(this.clickApply, this))
             .on('click.daterangepicker', 'button.cancelBtn', $.proxy(this.clickCancel, this))
             .on('click.daterangepicker', 'li', $.proxy(this.clickRange, this))
@@ -441,9 +469,32 @@
         //
         // if attached to a text input, set the initial value
         //
-
+        
+		var dayTypeFilterParams = '';
+	   	var allSelect = true;
+	    var separator_flag = false;
+	    for (var key in this.dayTypeKeyValue) {
+		        if ( window.dayTypeFilter[key] ) {
+		        	
+		        	if (separator_flag) {
+		            	dayTypeFilterParams += ',' + window.dayTypeArray[this.dayTypeKeyValue[key]];
+		            } else {
+		            	dayTypeFilterParams =   window.dayTypeArray[this.dayTypeKeyValue[key]];
+		            }
+		        	separator_flag = true;
+		       	}     
+		 	allSelect = allSelect && window.dayTypeFilter[key]
+		}
+		if (allSelect) {
+			dayTypeFilterParams = '';
+		}
+			
+		if (dayTypeFilterParams != '' ){
+			dayTypeFilterParams = ' (' + dayTypeFilterParams + ')';
+		}
+		
         if (this.element.is('input') && !this.singleDatePicker && this.autoUpdateInput) {
-            this.element.val(this.startDate.format(this.locale.format) + this.locale.separator + this.endDate.format(this.locale.format));
+            this.element.val(this.startDate.format(this.locale.format) + this.locale.separator + this.endDate.format(this.locale.format) + dayTypeFilterParams);
             this.element.trigger('change');
         } else if (this.element.is('input') && this.autoUpdateInput) {
             this.element.val(this.startDate.format(this.locale.format));
@@ -577,8 +628,28 @@
               this.leftCalendar.month = this.maxDate.clone().date(2).subtract(1, 'month');
             }
         },
+        
+        updateDayTypeFilter: function(e) {
+        	if( $(this).is(':checked') ) {
+		    	window.dayTypeFilter[this.name] = true;
+    		}else{
+    			window.dayTypeFilter[this.name] = false;
+   			}
+   			$('.filterBtn').click();
+        },
 
         updateCalendars: function() {
+        	$('#dateRanagePickerStartDate').val(this.startDate.format('DD/MM/YYYY'));
+        	$('#dateRanagePickerEndDate').val(this.endDate.format('DD/MM/YYYY'));
+        	var dayTypeFilterValues = [];
+        	for (var key in this.dayTypeKeyValue) {
+	            if ( window.dayTypeFilter[key] ) {
+	                 dayTypeFilterValues.push(this.dayTypeKeyValue[key])
+	            }
+	        }
+	        $('#dateRanagePickerFilter').val(dayTypeFilterValues);
+	        this.updateElement();
+	       	//alert($('#dateRanagePickerFilter').val() + ":" + $('#dateRanagePickerStartDate').val() + ":" + $('#dateRanagePickerEndDate').val()); 	
 
             if (this.timePicker) {
                 var hour, minute, second;
@@ -819,8 +890,25 @@
                         classes.push('active', 'end-date');
 
                     //highlight dates in-between the selected dates
-                    if (this.endDate != null && calendar[row][col] > this.startDate && calendar[row][col] < this.endDate)
-                        classes.push('in-range');
+                    if (this.endDate != null && calendar[row][col] > this.startDate && calendar[row][col] < this.endDate) {
+                    	var dayObj = new Date(calendar[row][col]);
+                    	
+                    	var result_tag = false;
+                    	for (var key in this.dayTypeKeyValue) {
+                    		result_tag = result_tag || window.dayTypeFilter[key];
+                    	}
+                    	
+                    	if (result_tag) {
+	                    	for (var key in this.dayTypeKeyValue) {
+	                    		if ( window.dayTypeFilter[key] && ( this.dayTypeKeyValue[key]==dayObj.getDay() )) {
+	                    			classes.push('in-range');
+	                    		}
+	                    	}
+	                    } else {
+	                    	classes.push('in-range');
+	                    }
+ 
+                    }
 
                     //apply custom classes for this date
                     var isCustom = this.isCustomDate(calendar[row][col]);
@@ -1026,8 +1114,10 @@
 
             if (this.singleDatePicker || (this.endDate && (this.startDate.isBefore(this.endDate) || this.startDate.isSame(this.endDate)))) {
                 this.container.find('button.applyBtn').removeAttr('disabled');
+                this.container.find('button.filterBtn').removeAttr('disabled');
             } else {
                 this.container.find('button.applyBtn').attr('disabled', 'disabled');
+                this.container.find('button.filterBtn').attr('disabled', 'disabled');
             }
 
         },
@@ -1279,7 +1369,25 @@
                     var dt = cal.hasClass('left') ? leftCalendar.calendar[row][col] : rightCalendar.calendar[row][col];
 
                     if ((dt.isAfter(startDate) && dt.isBefore(date)) || dt.isSame(date, 'day')) {
-                        $(el).addClass('in-range');
+                    	var dayObj = new Date(dt);
+                    	
+                    	var result_tag = false;
+                    	for (var key in this.dayTypeKeyValue) {
+                    		result_tag = result_tag || window.dayTypeFilter[key];
+                    	}
+                    	
+                    	if (result_tag) {
+	                    	for (var key in this.dayTypeKeyValue) {
+	                    		if ( window.dayTypeFilter[key] && ( this.dayTypeKeyValue[key]==dayObj.getDay() )) {
+	                    			$(el).addClass('in-range');
+	                    		} else {
+	                    			$(el).removeClass('in-range');
+	                    		}
+	                    	}
+	                    } else {
+	                    	 $(el).addClass('in-range');
+	                    }
+                        
                     } else {
                         $(el).removeClass('in-range');
                     }
@@ -1369,14 +1477,14 @@
                 if (this.timePicker) {
                     if (this.startDate.isSame(this.ranges[range][0]) && this.endDate.isSame(this.ranges[range][1])) {
                         customRange = false;
-                        this.chosenLabel = this.container.find('.ranges li:eq(' + i + ')').addClass('active').html();
+                        //this.chosenLabel = this.container.find('.ranges li:eq(' + i + ')').addClass('active').html();
                         break;
                     }
                 } else {
                     //ignore times when comparing dates if time picker is not enabled
                     if (this.startDate.format('YYYY-MM-DD') == this.ranges[range][0].format('YYYY-MM-DD') && this.endDate.format('YYYY-MM-DD') == this.ranges[range][1].format('YYYY-MM-DD')) {
                         customRange = false;
-                        this.chosenLabel = this.container.find('.ranges li:eq(' + i + ')').addClass('active').html();
+                        //this.chosenLabel = this.container.find('.ranges li:eq(' + i + ')').addClass('active').html();
                         break;
                     }
                 }
@@ -1384,12 +1492,16 @@
             }
             if (customRange) {
                 if (this.showCustomRangeLabel) {
-                    this.chosenLabel = this.container.find('.ranges li:last').addClass('active').html();
+                    //this.chosenLabel = this.container.find('.ranges li:last').addClass('active').html();
                 } else {
                     this.chosenLabel = null;
                 }
                 this.showCalendars();
             }
+        },
+        
+        clickFilter: function(e) {
+            this.updateCalendars();
         },
 
         clickApply: function(e) {
@@ -1400,6 +1512,9 @@
         clickCancel: function(e) {
             this.startDate = this.oldStartDate;
             this.endDate = this.oldEndDate;
+            $('#dateRanagePickerStartDate').val(this.startDate.format('DD/MM/YYYY'));
+        	$('#dateRanagePickerEndDate').val(this.endDate.format('DD/MM/YYYY'));
+        	//alert($('#dateRanagePickerFilter').val() + ":" + $('#dateRanagePickerStartDate').val() + ":" + $('#dateRanagePickerEndDate').val()); 	
             this.hide();
             this.element.trigger('cancel.daterangepicker', this);
         },
@@ -1590,8 +1705,30 @@
         },
 
         updateElement: function() {
+	        var dayTypeFilterParams = '';
+	        var allSelect = true;
+	        var separator_flag = false;
+	        for (var key in this.dayTypeKeyValue) {
+		            if ( window.dayTypeFilter[key] ) {
+		                if (separator_flag) {
+			            	dayTypeFilterParams += ', ' + window.dayTypeArray[this.dayTypeKeyValue[key]];
+			            } else {
+			            	dayTypeFilterParams =   window.dayTypeArray[this.dayTypeKeyValue[key]];
+			            }
+			        	separator_flag = true;
+		            }     
+		            allSelect = allSelect && window.dayTypeFilter[key];
+		    }
+		    if (allSelect) {
+			    	dayTypeFilterParams = '';
+			}
+			
+			if (dayTypeFilterParams != '' ){
+				dayTypeFilterParams = ' ( ' + dayTypeFilterParams + ' )';
+			}
+		    
             if (this.element.is('input') && !this.singleDatePicker && this.autoUpdateInput) {
-                this.element.val(this.startDate.format(this.locale.format) + this.locale.separator + this.endDate.format(this.locale.format));
+                this.element.val(this.startDate.format(this.locale.format) + this.locale.separator + this.endDate.format(this.locale.format) + dayTypeFilterParams);
                 this.element.trigger('change');
             } else if (this.element.is('input') && this.autoUpdateInput) {
                 this.element.val(this.startDate.format(this.locale.format));
