@@ -170,6 +170,10 @@
     .daterangepicker .calendar-time select.disabled {
       color: #ccc;
       cursor: not-allowed; }
+      
+.daytypefilter { position: relative; }
+.daytypefilter i { position: absolute; bottom: 10px; right: 24px; top: auto; cursor: pointer; }
+      
 
 .ranges {
   font-size: 11px;
