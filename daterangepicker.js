@@ -1279,11 +1279,11 @@
                 this.updateView();
             } else {
                 var dates = this.ranges[label];
-                if (typeof dates[0] !== 'undefined') {
+                if (typeof dates !== 'undefined' ) {
                 	this.container.find('input[name=daterangepicker_start]').val(dates[0].format(this.locale.format));
                 }
                 
-                if (typeof dates[1] !== 'undefined') {
+                if (typeof dates !== 'undefined') {
                 	this.container.find('input[name=daterangepicker_end]').val(dates[1].format(this.locale.format));
                 }
   
