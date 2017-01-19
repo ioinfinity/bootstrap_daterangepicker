@@ -1298,14 +1298,16 @@
                 this.showCalendars();
             } else {
                 var dates = this.ranges[label];
-                this.startDate = dates[0];
-                this.endDate = dates[1];
+                if ( typeof dates !== 'undefined' ) {
+                	this.startDate = dates[0];
+                	this.endDate = dates[1];
 
-                if (!this.timePicker) {
-                    this.startDate.startOf('day');
-                    this.endDate.endOf('day');
+                	if (!this.timePicker) {
+                    	this.startDate.startOf('day');
+                    	this.endDate.endOf('day');
+                	}
                 }
-
+                
                 if (!this.alwaysShowCalendars)
                     this.hideCalendars();
                 this.clickApply();
