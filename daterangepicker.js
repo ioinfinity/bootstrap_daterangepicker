@@ -125,9 +125,6 @@
                         '<button class="applyBtn" disabled="disabled" type="button"></button> ' +
                         '<button class="cancelBtn" type="button"></button>' +
                         '<button class="filterBtn" disabled="disabled" style="display:none;"type="button"></button> ' +
-                        '<input type="hidden" name="dateRanagePickerStartDate_' + this.date_range_text_input_name + '" id="dateRanagePickerStartDate_' + this.date_range_text_input_name + '" value="'+this.startDate.format('DD/MM/YYYY')+'"/>' +
-                        '<input type="hidden" name="dateRanagePickerEndDate_' + this.date_range_text_input_name + '" id="dateRanagePickerEndDate_' + this.date_range_text_input_name + '"  value="'+this.startDate.format('DD/MM/YYYY')+'"/>' +
-                        '<input type="hidden" name="dateRanagePickerFilter_' + this.date_range_text_input_name + '" id="dateRanagePickerFilter_' + this.date_range_text_input_name + '" />' +
                     '</div>' +
                 '</div>' +
             '</div>';
