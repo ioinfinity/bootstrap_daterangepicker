@@ -46,7 +46,7 @@ $(document).ready(function() {
 	    $(this).daterangepicker(options, function(start, end, label) { console.log('New date range selected: ' + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD') + ' (predefined range: ' + label + ')'); });
 	    hidden_inputs = 
 	    	'<input type="hidden" name="dateRanagePickerStartDate_' + options.date_range_text_input_name+ '" id="dateRanagePickerStartDate_' + options.date_range_text_input_name + '" value="'+ options.startDate.format('DD/MM/YYYY') +'"/>' +
-            '<input type="hidden" name="dateRanagePickerEndDate_' + options.date_range_text_input_name + '" id="dateRanagePickerEndDate_' + options.date_range_text_input_name + '"  value="'+ options.startDate.format('DD/MM/YYYY')  + '"/>' +
+            '<input type="hidden" name="dateRanagePickerEndDate_' + options.date_range_text_input_name + '" id="dateRanagePickerEndDate_' + options.date_range_text_input_name + '"  value="'+ options.endDate.format('DD/MM/YYYY')  + '"/>' +
             '<input type="hidden" name="dateRanagePickerFilter_' + options.date_range_text_input_name + '" id="dateRanagePickerFilter_' + options.date_range_text_input_name + '" />' ;
 	    
 	    $(this).after(hidden_inputs);
