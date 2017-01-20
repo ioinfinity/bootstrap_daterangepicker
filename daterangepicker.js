@@ -773,7 +773,7 @@
             var minDate = side == 'left' ? this.minDate : this.startDate;
             var maxDate = this.maxDate;
             var selected = side == 'left' ? this.startDate : this.endDate;
-            var arrow = this.locale.direction == 'ltr' ? {left: 'chevron-left', right: 'chevron-right'} : {left: 'chevron-right', right: 'chevron-left'};
+            var arrow = this.locale.direction == 'ltr' ? {left: 'chevron-left icon-circle-arrow-left', right: 'chevron-right icon-circle-arrow-right'} : {left: 'chevron-right icon-circle-arrow-right', right: 'chevron-left icon-circle-arrow-left'};
 
             var html = '<table class="table-condensed">';
             html += '<thead>';
