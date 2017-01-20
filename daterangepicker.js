@@ -51,6 +51,7 @@
         this.alwaysShowCalendars = false;
         this.ranges = {};
         this.dayTypeKeyValue = {}; 
+        this.date_range_text_input_name = options.date_range_text_input_name;
         window.dayTypeArray = ['Sun', 'Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat'];
 
         this.opens = 'right';
@@ -124,9 +125,9 @@
                         '<button class="applyBtn" disabled="disabled" type="button"></button> ' +
                         '<button class="cancelBtn" type="button"></button>' +
                         '<button class="filterBtn" disabled="disabled" style="display:none;"type="button"></button> ' +
-                        '<input type="hidden" name="dateRanagePickerStartDate" id="dateRanagePickerStartDate"/>' +
-                        '<input type="hidden" name="dateRanagePickerEndDate" id="dateRanagePickerEndDate"/>' +
-                        '<input type="hidden" name="dateRanagePickerFilter" id="dateRanagePickerFilter"/>' +
+                        '<input type="hidden" name="dateRanagePickerStartDate_' + this.date_range_text_input_name + '" id="dateRanagePickerStartDate_' + this.date_range_text_input_name + '" value="'+this.startDate.format('DD/MM/YYYY')+'"/>' +
+                        '<input type="hidden" name="dateRanagePickerEndDate_' + this.date_range_text_input_name + '" id="dateRanagePickerEndDate_' + this.date_range_text_input_name + '"/>' +
+                        '<input type="hidden" name="dateRanagePickerFilter_' + this.date_range_text_input_name + '" id="dateRanagePickerFilter_' + this.date_range_text_input_name + '" value="'+this.startDate.format('DD/MM/YYYY')+'"/>' +
                     '</div>' +
                 '</div>' +
             '</div>';
@@ -276,6 +277,12 @@
 
         if (typeof options.alwaysShowCalendars === 'boolean')
             this.alwaysShowCalendars = options.alwaysShowCalendars;
+            
+        if (typeof options.startDate === 'string')
+            this.startDate = moment(options.startDate, this.locale.format);
+
+        if (typeof options.endDate === 'string')
+            this.endDate = moment(options.endDate, this.locale.format);
 
         // update day names order to firstDay
         if (this.locale.firstDay != 0) {
@@ -361,10 +368,11 @@
             var dayTypePostfix = '_cb';
 			var dayTypeFilter = {};
 			var dayTypeKeyValue = {};
+			var dateRangeTextInputName = '_' + options.date_range_text_input_name;
            	$.each(window.dayTypeArray, function( index, value ) {
-           		 dayTypeKeyValue[dayTypePrefix + value.toLowerCase() + dayTypePostfix] = index;
+           		 dayTypeKeyValue[dayTypePrefix + value.toLowerCase() + dayTypePostfix + dateRangeTextInputName] = index;
   				 list += '<li><input type="checkbox" class="day_type_filter_checkboxes" id="'+dayTypePrefix + value.toLowerCase() + dayTypePostfix+
-  				 			'" name="'+dayTypePrefix + value.toLowerCase() + dayTypePostfix+'" >&nbsp;'+window.dayTypeArray[index]+'</li>';
+  				 			'" name="' + dayTypePrefix + value.toLowerCase() + dayTypePostfix + dateRangeTextInputName + '" >&nbsp;'+window.dayTypeArray[index]+'</li>';
 			});
 			this.dayTypeKeyValue = dayTypeKeyValue;
 			          
@@ -474,7 +482,7 @@
 	   	var allSelect = true;
 	    var separator_flag = false;
 	    for (var key in this.dayTypeKeyValue) {
-		        if ( window.dayTypeFilter[key] ) {
+		        if ( window.dayTypeFilter[key] && ( key.search(this.date_range_text_input_name) != -1 )) {
 		        	
 		        	if (separator_flag) {
 		            	dayTypeFilterParams += ',' + window.dayTypeArray[this.dayTypeKeyValue[key]];
@@ -483,7 +491,7 @@
 		            }
 		        	separator_flag = true;
 		       	}     
-		 	allSelect = allSelect && window.dayTypeFilter[key]
+		 	allSelect = allSelect && window.dayTypeFilter[key] && ( key.search(this.date_range_text_input_name) != -1 )
 		}
 		if (allSelect) {
 			dayTypeFilterParams = '';
@@ -639,17 +647,23 @@
         },
 
         updateCalendars: function() {
-        	$('#dateRanagePickerStartDate').val(this.startDate.format('DD/MM/YYYY'));
-        	$('#dateRanagePickerEndDate').val(this.endDate.format('DD/MM/YYYY'));
+        	if ( this.startDate != null ) {
+        		$('#dateRanagePickerStartDate_' + this.date_range_text_input_name).val(this.startDate.format('DD/MM/YYYY'));
+        	}
+        	
+        	if ( this.endDate != null ) {
+        		$('#dateRanagePickerEndDate_' + this.date_range_text_input_name ).val(this.endDate.format('DD/MM/YYYY'));
+        	}
+        	
         	var dayTypeFilterValues = [];
         	for (var key in this.dayTypeKeyValue) {
-	            if ( window.dayTypeFilter[key] ) {
+	            if ( window.dayTypeFilter[key] && ( key.search(this.date_range_text_input_name) != -1 ) ) {
 	                 dayTypeFilterValues.push(this.dayTypeKeyValue[key])
 	            }
 	        }
-	        $('#dateRanagePickerFilter').val(dayTypeFilterValues);
+	        $('#dateRanagePickerFilter_' + this.date_range_text_input_name).val(dayTypeFilterValues);
 	        this.updateElement();
-	       	//alert($('#dateRanagePickerFilter').val() + ":" + $('#dateRanagePickerStartDate').val() + ":" + $('#dateRanagePickerEndDate').val()); 	
+	       	//alert($('#dateRanagePickerFilter_' + this.date_range_text_input_name).val() + ":" + $('#dateRanagePickerStartDate_' + this.date_range_text_input_name).val() + ":" + $('#dateRanagePickerEndDate_' + this.date_range_text_input_name).val()); 	
 
             if (this.timePicker) {
                 var hour, minute, second;
@@ -895,12 +909,12 @@
                     	
                     	var result_tag = false;
                     	for (var key in this.dayTypeKeyValue) {
-                    		result_tag = result_tag || window.dayTypeFilter[key];
+                    		result_tag = result_tag || ( window.dayTypeFilter[key] && ( key.search(this.date_range_text_input_name) != -1 ) );
                     	}
                     	
                     	if (result_tag) {
 	                    	for (var key in this.dayTypeKeyValue) {
-	                    		if ( window.dayTypeFilter[key] && ( this.dayTypeKeyValue[key]==dayObj.getDay() )) {
+	                    		if ( window.dayTypeFilter[key] && ( key.search(this.date_range_text_input_name) != -1 ) && ( this.dayTypeKeyValue[key]==dayObj.getDay() )) {
 	                    			classes.push('in-range');
 	                    		}
 	                    	}
@@ -1382,12 +1396,12 @@
                     	
                     	var result_tag = false;
                     	for (var key in this.dayTypeKeyValue) {
-                    		result_tag = result_tag || window.dayTypeFilter[key];
+                    		result_tag = result_tag || ( window.dayTypeFilter[key] && ( key.search(this.date_range_text_input_name) != -1 ) );
                     	}
                     	
                     	if (result_tag) {
 	                    	for (var key in this.dayTypeKeyValue) {
-	                    		if ( window.dayTypeFilter[key] && ( this.dayTypeKeyValue[key]==dayObj.getDay() )) {
+	                    		if ( window.dayTypeFilter[key] && ( key.search(this.date_range_text_input_name) != -1 ) && ( this.dayTypeKeyValue[key]==dayObj.getDay() )) {
 	                    			$(el).addClass('in-range');
 	                    		} else {
 	                    			$(el).removeClass('in-range');
@@ -1521,9 +1535,12 @@
         clickCancel: function(e) {
             this.startDate = this.oldStartDate;
             this.endDate = this.oldEndDate;
-            $('#dateRanagePickerStartDate').val(this.startDate.format('DD/MM/YYYY'));
-        	$('#dateRanagePickerEndDate').val(this.endDate.format('DD/MM/YYYY'));
-        	//alert($('#dateRanagePickerFilter').val() + ":" + $('#dateRanagePickerStartDate').val() + ":" + $('#dateRanagePickerEndDate').val()); 	
+
+     		$('#dateRanagePickerStartDate_' + this.date_range_text_input_name ).val(this.startDate.format('DD/MM/YYYY'));
+     		$('#dateRanagePickerEndDate_' + this.date_range_text_input_name ).val(this.endDate.format('DD/MM/YYYY'));
+
+
+        	//alert($('#dateRanagePickerFilter_' + this.date_range_text_input_name ).val() + ":" + $('#dateRanagePickerStartDate_' + this.date_range_text_input_name ).val() + ":" + $('#dateRanagePickerEndDate_' + this.date_range_text_input_name ).val()); 	
             this.hide();
             this.element.trigger('cancel.daterangepicker', this);
         },
@@ -1718,7 +1735,7 @@
 	        var allSelect = true;
 	        var separator_flag = false;
 	        for (var key in this.dayTypeKeyValue) {
-		            if ( window.dayTypeFilter[key] ) {
+		            if ( window.dayTypeFilter[key] && ( key.search(this.date_range_text_input_name) != -1 ) ) {
 		                if (separator_flag) {
 			            	dayTypeFilterParams += ', ' + window.dayTypeArray[this.dayTypeKeyValue[key]];
 			            } else {
@@ -1726,7 +1743,7 @@
 			            }
 			        	separator_flag = true;
 		            }     
-		            allSelect = allSelect && window.dayTypeFilter[key];
+		            allSelect = allSelect && window.dayTypeFilter[key] && ( key.search(this.date_range_text_input_name) != -1 );
 		    }
 		    if (allSelect) {
 			    	dayTypeFilterParams = '';
@@ -1736,13 +1753,21 @@
 				dayTypeFilterParams = ' ( ' + dayTypeFilterParams + ' )';
 			}
 		    
-            if (this.element.is('input') && !this.singleDatePicker && this.autoUpdateInput) {
+            if (this.element.is('input') && !this.singleDatePicker && this.autoUpdateInput && this.endDate !== null ) {
                 this.element.val(this.startDate.format(this.locale.format) + this.locale.separator + this.endDate.format(this.locale.format) + dayTypeFilterParams);
                 this.element.trigger('change');
             } else if (this.element.is('input') && this.autoUpdateInput) {
                 this.element.val(this.startDate.format(this.locale.format));
                 this.element.trigger('change');
             }
+            
+            if ( this.startDate != null ) {
+	        	$('#dateRanagePickerStartDate_' + this.date_range_text_input_name).val(this.startDate.format('DD/MM/YYYY'));
+	        }
+	        	
+	        if ( this.endDate != null ) {
+	        	$('#dateRanagePickerEndDate_' + this.date_range_text_input_name ).val(this.endDate.format('DD/MM/YYYY'));
+	        }
         },
 
         remove: function() {
