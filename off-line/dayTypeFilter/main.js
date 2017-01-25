@@ -41,8 +41,15 @@ $(document).ready(function() {
 		} else {
 			options.date_range_text_input_name  = this.name;
 		}
-		options.startDate = moment()
-    	options.endDate = moment().subtract(-7, 'days')
+		options.startDate = moment();
+    	options.endDate = moment().subtract(-7, 'days');
+    	defaultStartDate = $(this).attr('startdate');
+    	defaultEndDate = $(this).attr('enddate');
+    	if ( typeof defaultStartDate !== 'undefined' && defaultStartDate !== null && defaultStartDate !== '' &&
+    			typeof defaultEndDate !== 'undefined' && defaultEndDate !== null && defaultEndDate !== ''){
+    		options.startDate = moment(defaultStartDate, "DD/MM/YYYY");
+    		options.endDate = moment(defaultEndDate, "DD/MM/YYYY");
+    	}
 	    $(this).daterangepicker(options, function(start, end, label) { console.log('New date range selected: ' + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD') + ' (predefined range: ' + label + ')'); });
 	    hidden_inputs = 
 	    	'<input type="hidden" name="dateRanagePickerStartDate_' + options.date_range_text_input_name+ '" id="dateRanagePickerStartDate_' + options.date_range_text_input_name + '" value="'+ options.startDate.format('DD/MM/YYYY') +'"/>' +
