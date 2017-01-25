@@ -45,11 +45,13 @@ $(document).ready(function() {
     	options.endDate = moment().subtract(-7, 'days');
     	defaultStartDate = $(this).attr('startdate');
     	defaultEndDate = $(this).attr('enddate');
+    	console.log("Attribute value of start date is " + defaultStartDate + " / Attribute value of end date is " + defaultEndDate);
     	if ( typeof defaultStartDate !== 'undefined' && defaultStartDate !== null && defaultStartDate !== '' &&
     			typeof defaultEndDate !== 'undefined' && defaultEndDate !== null && defaultEndDate !== ''){
     		options.startDate = moment(defaultStartDate, "DD/MM/YYYY");
     		options.endDate = moment(defaultEndDate, "DD/MM/YYYY");
     	}
+    	
 	    $(this).daterangepicker(options, function(start, end, label) { console.log('New date range selected: ' + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD') + ' (predefined range: ' + label + ')'); });
 	    hidden_inputs = 
 	    	'<input type="hidden" name="dateRanagePickerStartDate_' + options.date_range_text_input_name+ '" id="dateRanagePickerStartDate_' + options.date_range_text_input_name + '" value="'+ options.startDate.format('DD/MM/YYYY') +'"/>' +
