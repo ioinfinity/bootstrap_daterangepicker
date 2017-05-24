@@ -647,11 +647,11 @@
 
         updateCalendars: function() {
         	if ( this.startDate != null ) {
-        		$('#dateRanagePickerStartDate_' + this.date_range_text_input_name).val(this.startDate.format('DD/MM/YYYY'));
+        		$('#dateRanagePickerStartDate_' + this.date_range_text_input_name).val(this.startDate.format('YYYY/MM/DD'));
         	}
         	
         	if ( this.endDate != null ) {
-        		$('#dateRanagePickerEndDate_' + this.date_range_text_input_name ).val(this.endDate.format('DD/MM/YYYY'));
+        		$('#dateRanagePickerEndDate_' + this.date_range_text_input_name ).val(this.endDate.format('YYYY/MM/DD'));
         	}
         	
         	var dayTypeFilterValues = [];
@@ -1535,8 +1535,8 @@
             this.startDate = this.oldStartDate;
             this.endDate = this.oldEndDate;
 
-     		$('#dateRanagePickerStartDate_' + this.date_range_text_input_name ).val(this.startDate.format('DD/MM/YYYY'));
-     		$('#dateRanagePickerEndDate_' + this.date_range_text_input_name ).val(this.endDate.format('DD/MM/YYYY'));
+     		$('#dateRanagePickerStartDate_' + this.date_range_text_input_name ).val(this.startDate.format('YYYY/MM/DD'));
+     		$('#dateRanagePickerEndDate_' + this.date_range_text_input_name ).val(this.endDate.format('YYYY/MM/DD'));
 
 
         	//alert($('#dateRanagePickerFilter_' + this.date_range_text_input_name ).val() + ":" + $('#dateRanagePickerStartDate_' + this.date_range_text_input_name ).val() + ":" + $('#dateRanagePickerEndDate_' + this.date_range_text_input_name ).val()); 	
@@ -1761,11 +1761,11 @@
             }
             
             if ( this.startDate != null ) {
-	        	$('#dateRanagePickerStartDate_' + this.date_range_text_input_name).val(this.startDate.format('DD/MM/YYYY'));
+	        	$('#dateRanagePickerStartDate_' + this.date_range_text_input_name).val(this.startDate.format('YYYY/MM/DD'));
 	        }
 	        	
 	        if ( this.endDate != null ) {
-	        	$('#dateRanagePickerEndDate_' + this.date_range_text_input_name ).val(this.endDate.format('DD/MM/YYYY'));
+	        	$('#dateRanagePickerEndDate_' + this.date_range_text_input_name ).val(this.endDate.format('YYYY/MM/DD'));
 	        }
         },
 
