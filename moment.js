@@ -836,15 +836,17 @@
     // LOCALES
 
     var MONTHS_IN_FORMAT = /D[oD]?(\[[^\[\]]*\]|\s+)+MMMM?/;
-    //var defaultLocaleMonths = 'January_February_March_April_May_June_July_August_September_October_November_December'.split('_');
-    var defaultLocaleMonths = ['January','February','March','April','May','June','July','August','September','October','November','December']
+    // var defaultLocaleMonths = 'January_February_March_April_May_June_July_August_September_October_November_December'.split('_');
+    // var defaultLocaleMonths = ['January','February','March','April','May','June','July','August','September','October','November','December']
+    var defaultLocaleMonths = [gettext('January'),gettext('February'),gettext('March'),gettext('April'),gettext('May'),gettext('June'),gettext('July'),gettext('August'),gettext('September'),gettext('October'),gettext('November'),gettext('December')]
     function localeMonths (m, format) {
         return isArray(this._months) ? this._months[m.month()] :
             this._months[MONTHS_IN_FORMAT.test(format) ? 'format' : 'standalone'][m.month()];
     }
 
-    //var defaultLocaleMonthsShort = 'Jan_Feb_Mar_Apr_May_Jun_Jul_Aug_Sep_Oct_Nov_Dec'.split('_');
-    var defaultLocaleMonthsShort = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    // var defaultLocaleMonthsShort = 'Jan_Feb_Mar_Apr_May_Jun_Jul_Aug_Sep_Oct_Nov_Dec'.split('_');
+    // var defaultLocaleMonthsShort = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    var defaultLocaleMonthsShort = [gettext('Jan'),gettext('Feb'),gettext('Mar'),gettext('Apr'),gettext('May'),gettext('Jun'),gettext('Jul'),gettext('Aug'),gettext('Sep'),gettext('Oct'),gettext('Nov'),gettext('Dec')];
     function localeMonthsShort (m, format) {
         return isArray(this._monthsShort) ? this._monthsShort[m.month()] :
             this._monthsShort[MONTHS_IN_FORMAT.test(format) ? 'format' : 'standalone'][m.month()];
@@ -2802,7 +2804,9 @@
         return this._weekdaysShort[m.day()];
     }
 
-    var defaultLocaleWeekdaysMin = 'Su_Mo_Tu_We_Th_Fr_Sa'.split('_');
+    // var defaultLocaleWeekdaysMin = 'Su_Mo_Tu_We_Th_Fr_Sa'.split('_');
+    // var defaultLocaleWeekdaysMin = ['Su','Mo','Tu','We','Th','Fr','Sa'];
+    var defaultLocaleWeekdaysMin = [gettext('Su'),gettext('Mo'),gettext('Tu'),gettext('We'),gettext('Th'),gettext('Fr'),gettext('Sa')];
     function localeWeekdaysMin (m) {
         return this._weekdaysMin[m.day()];
     }
