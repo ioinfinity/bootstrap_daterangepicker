@@ -54,7 +54,7 @@
         this.date_range_text_input_name = options.date_range_text_input_name;
         
         // window.dayTypeArray = ['Sun', 'Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat'];
-		window.dayTypeArray = [gettext('Su'),gettext('Mo'),gettext('Tu'),gettext('We'),gettext('Th'),gettext('Fr'),gettext('Sa')];
+		window.dayTypeArray = [gettext('Sun'),gettext('Mon'),gettext('Tue'),gettext('Wed'),gettext('Thur'),gettext('Fri'),gettext('Sat')];
 		
         this.opens = 'right';
         if (this.element.hasClass('pull-right'))
