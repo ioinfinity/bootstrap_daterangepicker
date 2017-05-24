@@ -45,6 +45,7 @@ $(document).ready(function() {
 		} else {
 			options.date_range_text_input_name  = this.name;
 		}
+		options.locale = { format: 'YYYY/MM/DD' }
 		options.startDate = moment();
     	options.endDate = moment().subtract(-7, 'days');
     	defaultStartDate = $(this).attr('startdate');
