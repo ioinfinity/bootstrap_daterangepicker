@@ -36,7 +36,7 @@ $(document).ready(function() {
 	$('.date_range_selection').each(function () {
 		
 		var show_date_format = 'YYYY/MM/DD'
-		var data_date_format = 'DD/MM/YYYY'
+		var data_date_format = 'YYYY/MM/DD'
 		
 		if ( typeof this.name == 'undefined' || this.name == null || this.name == '' ) {
 			var uuid = generateUUID();
