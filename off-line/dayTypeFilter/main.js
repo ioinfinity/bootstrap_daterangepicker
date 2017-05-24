@@ -35,8 +35,8 @@ $(document).ready(function() {
     var idArray = [];
 	$('.date_range_selection').each(function () {
 		
-		var show_date_format = 'YYYY/MM/DD'
-		var data_date_format = 'YYYY/MM/DD'
+		var show_date_format = 'YYYY-MM-DD'
+		var data_date_format = 'YYYY-MM-DD'
 		
 		if ( typeof this.name == 'undefined' || this.name == null || this.name == '' ) {
 			var uuid = generateUUID();
@@ -45,7 +45,7 @@ $(document).ready(function() {
 		} else {
 			options.date_range_text_input_name  = this.name;
 		}
-		options.locale = { format: 'YYYY/MM/DD' }
+		options.locale = { format: 'YYYY-MM-DD' }
 		options.startDate = moment();
     	options.endDate = moment().subtract(-7, 'days');
     	defaultStartDate = $(this).attr('startdate');
