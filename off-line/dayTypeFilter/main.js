@@ -34,6 +34,10 @@ $(document).ready(function() {
     
     var idArray = [];
 	$('.date_range_selection').each(function () {
+		
+		var show_date_format = 'YYYY/MM/DD'
+		var data_date_format = 'DD/MM/YYYY'
+		
 		if ( typeof this.name == 'undefined' || this.name == null || this.name == '' ) {
 			var uuid = generateUUID();
   			options.date_range_text_input_name = uuid;
@@ -48,14 +52,14 @@ $(document).ready(function() {
     	console.log("Attribute value of start date is " + defaultStartDate + " / Attribute value of end date is " + defaultEndDate);
     	if ( typeof defaultStartDate !== 'undefined' && defaultStartDate !== null && defaultStartDate !== '' &&
     			typeof defaultEndDate !== 'undefined' && defaultEndDate !== null && defaultEndDate !== ''){
-    		options.startDate = moment(defaultStartDate, "DD/MM/YYYY");
-    		options.endDate = moment(defaultEndDate, "DD/MM/YYYY");
+    		options.startDate = moment(defaultStartDate, show_date_format);
+    		options.endDate = moment(defaultEndDate, show_date_format);
     	}
     	
-	    $(this).daterangepicker(options, function(start, end, label) { console.log('New date range selected: ' + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD') + ' (predefined range: ' + label + ')'); });
+	    $(this).daterangepicker(options, function(start, end, label) { console.log('New date range selected: ' + start.format(show_date_format) + ' to ' + end.format(show_date_format) + ' (predefined range: ' + label + ')'); });
 	    hidden_inputs = 
-	    	'<input type="hidden" name="dateRanagePickerStartDate_' + options.date_range_text_input_name+ '" id="dateRanagePickerStartDate_' + options.date_range_text_input_name + '" value="'+ options.startDate.format('DD/MM/YYYY') +'"/>' +
-            '<input type="hidden" name="dateRanagePickerEndDate_' + options.date_range_text_input_name + '" id="dateRanagePickerEndDate_' + options.date_range_text_input_name + '"  value="'+ options.endDate.format('DD/MM/YYYY')  + '"/>' +
+	    	'<input type="hidden" name="dateRanagePickerStartDate_' + options.date_range_text_input_name+ '" id="dateRanagePickerStartDate_' + options.date_range_text_input_name + '" value="'+ options.startDate.format(data_date_format) +'"/>' +
+            '<input type="hidden" name="dateRanagePickerEndDate_' + options.date_range_text_input_name + '" id="dateRanagePickerEndDate_' + options.date_range_text_input_name + '"  value="'+ options.endDate.format(data_date_format)  + '"/>' +
             '<input type="hidden" name="dateRanagePickerFilter_' + options.date_range_text_input_name + '" id="dateRanagePickerFilter_' + options.date_range_text_input_name + '" />' ;
 	    
 	    $(this).after(hidden_inputs);
